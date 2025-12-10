@@ -1,0 +1,15 @@
+{
+    "account_id": 1627783,
+    "accounts": "",
+    "email": "cakemail+sample@cakemail.io",
+    "exp": 1765804928,
+    "iat": 1765372928,
+    "id": 3039763,
+    "iss": "urn:cakemail",
+    "lineage": "1-131010-133315-1586434-1627783",
+    "scopes": [
+      "user"
+    ],
+    "tz": "America/Montreal",
+    "user_key": "<redacted>"
+  }
