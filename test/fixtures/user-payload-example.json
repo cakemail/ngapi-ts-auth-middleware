@@ -1,0 +1,17 @@
+{
+    "data": {
+        "id": "3039763",
+        "email": "cakemail+sample@cakemail.io",
+        "status": "active",
+        "created_on": 1737556402,
+        "last_activity_on": 1765372928,
+        "expires_on": null,
+        "first_name": "Sample",
+        "last_name": "User",
+        "title": null,
+        "language": "en_US",
+        "timezone": "America/Montreal",
+        "office_phone": null,
+        "mobile_phone": null
+    }
+}
