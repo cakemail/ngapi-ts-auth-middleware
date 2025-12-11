@@ -1,5 +1,5 @@
 import express, { Request, Response } from 'express'
-import { createAuthMiddleware } from '@cakemail/ngapi-ts-auth-middleware'
+import { createAuthMiddleware } from '@cakemail-org/ngapi-ts-auth-middleware'
 
 const app = express()
 

@@ -16,14 +16,14 @@ Express TypeScript authentication/authorization middleware for Cakemail's API. T
 ## Installation
 
 ```bash
-npm install @cakemail/ngapi-ts-auth-middleware
+npm install @cakemail-org/ngapi-ts-auth-middleware
 ```
 
 ## Quick Start
 
 ```typescript
 import express from 'express';
-import { createAuthMiddleware } from '@cakemail/ngapi-ts-auth-middleware';
+import { createAuthMiddleware } from '@cakemail-org/ngapi-ts-auth-middleware';
 
 const app = express();
 
@@ -269,7 +269,7 @@ const authMiddleware = createAuthMiddleware({
 
 ```typescript
 import express from 'express';
-import { createAuthMiddleware } from '@cakemail/ngapi-ts-auth-middleware';
+import { createAuthMiddleware } from '@cakemail-org/ngapi-ts-auth-middleware';
 
 const app = express();
 
@@ -334,7 +334,7 @@ const authMiddleware = createAuthMiddleware({
 ### Route-Specific Middleware
 
 ```typescript
-import { createAuthMiddleware } from '@cakemail/ngapi-ts-auth-middleware';
+import { createAuthMiddleware } from '@cakemail-org/ngapi-ts-auth-middleware';
 
 const authMiddleware = createAuthMiddleware({});
 
@@ -369,7 +369,7 @@ import {
   JwtPayload,
   AuthenticationError,
   AuthorizationError,
-} from '@cakemail/ngapi-ts-auth-middleware';
+} from '@cakemail-org/ngapi-ts-auth-middleware';
 ```
 
 ### Usage with Express
@@ -378,7 +378,7 @@ The middleware stores data in `res.locals`, which TypeScript recognizes automati
 
 ```typescript
 import { Request, Response } from 'express';
-import { AuthenticatedUser, Account } from '@cakemail/ngapi-ts-auth-middleware';
+import { AuthenticatedUser, Account } from '@cakemail-org/ngapi-ts-auth-middleware';
 
 app.get('/api/resource', authMiddleware, (req: Request, res: Response) => {
   // Access authenticated data from res.locals
@@ -399,7 +399,7 @@ For better type safety, you can create a helper type and guard:
 
 ```typescript
 import { Request, Response } from 'express';
-import { AuthenticatedUser, Account } from '@cakemail/ngapi-ts-auth-middleware';
+import { AuthenticatedUser, Account } from '@cakemail-org/ngapi-ts-auth-middleware';
 
 interface AuthLocals {
   user: AuthenticatedUser;

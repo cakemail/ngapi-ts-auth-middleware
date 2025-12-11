@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is an Express TypeScript authentication/authorization middleware for Cakemail's API (`@cakemail/ngapi-ts-auth-middleware`). It verifies JWT Bearer tokens, authorizes account impersonation, loads user data from the API, and caches results in Redis.
+This is an Express TypeScript authentication/authorization middleware for Cakemail's API (`@cakemail-org/ngapi-ts-auth-middleware`). It verifies JWT Bearer tokens, authorizes account impersonation, loads user data from the API, and caches results in Redis.
 
 **Key responsibility**: Populate `res.locals.user`, `res.locals.account`, and `res.locals.token` for downstream Express handlers.
 
