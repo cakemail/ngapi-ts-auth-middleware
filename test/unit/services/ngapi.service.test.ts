@@ -135,7 +135,25 @@ describe('NgApiService', () => {
             await expect(service.getAccount(accountId, mockToken)).rejects.toThrow('Invalid token')
         })
 
-        it('should throw AuthorizationError on 403 response', async () => {
+        it('should throw AuthorizationError on 400 response with error code 8004', async () => {
+            nock(baseUrl)
+                .get(`/accounts/${accountId}`)
+                .reply(400, {
+                    detail: [
+                        {
+                            msg: 'Forbidden',
+                            type: 'bad_request',
+                            code: 8004,
+                        },
+                    ],
+                })
+
+            await expect(service.getAccount(accountId, mockToken)).rejects.toThrow(
+                `Access denied to account ${accountId}`
+            )
+        })
+
+        it('should throw AuthorizationError on 403 response (fallback)', async () => {
             nock(baseUrl).get(`/accounts/${accountId}`).reply(403, { error: 'Forbidden' })
 
             await expect(service.getAccount(accountId, mockToken)).rejects.toThrow(
@@ -143,7 +161,31 @@ describe('NgApiService', () => {
             )
         })
 
-        it('should re-throw non-401/403 axios errors', async () => {
+        it('should not throw AuthorizationError on 400 with different error code', async () => {
+            nock(baseUrl)
+                .get(`/accounts/${accountId}`)
+                .reply(400, {
+                    detail: [
+                        {
+                            msg: 'Some other error',
+                            type: 'bad_request',
+                            code: 9999,
+                        },
+                    ],
+                })
+
+            await expect(service.getAccount(accountId, mockToken)).rejects.toThrow()
+        })
+
+        it('should not throw AuthorizationError on 400 without detail array', async () => {
+            nock(baseUrl)
+                .get(`/accounts/${accountId}`)
+                .reply(400, { error: 'Bad request without detail array' })
+
+            await expect(service.getAccount(accountId, mockToken)).rejects.toThrow()
+        })
+
+        it('should re-throw non-401/403/400-8004 axios errors', async () => {
             nock(baseUrl).get(`/accounts/${accountId}`).reply(500, { error: 'Server error' })
 
             await expect(service.getAccount(accountId, mockToken)).rejects.toThrow()

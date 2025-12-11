@@ -132,13 +132,21 @@ describe('Auth Middleware - Happy Path Integration Tests', () => {
             expect(response.body.targetAccount.id).not.toBe(response.body.userOwnAccount.id)
         })
 
-        it('should deny account impersonation when API returns 403', async () => {
+        it('should deny account impersonation when API returns 400 with error code 8004', async () => {
             const unauthorizedAccountId = 9999999
 
-            // Mock the /accounts/:id API call to return 403
+            // Mock the /accounts/:id API call to return 400 with error code 8004 (actual API behavior)
             nock(apiBaseUrl)
                 .get(`/accounts/${unauthorizedAccountId}`)
-                .reply(403, { error: 'Access denied' })
+                .reply(400, {
+                    detail: [
+                        {
+                            msg: 'Forbidden',
+                            type: 'bad_request',
+                            code: 8004,
+                        },
+                    ],
+                })
 
             const authMiddleware = createAuthMiddleware({
                 publicKey,

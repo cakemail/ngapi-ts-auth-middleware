@@ -43,6 +43,21 @@ export class NgApiService {
                         throw new AuthenticationError(`Invalid token`)
                     }
 
+                    // API returns 400 with error code 8004 for forbidden access
+                    if (axiosError.response?.status === 400) {
+                        const errorData = axiosError.response.data as {
+                            detail?: Array<{
+                                msg?: string
+                                type?: string
+                                code?: number
+                            }>
+                        }
+                        if (errorData?.detail?.[0]?.code === 8004) {
+                            throw new AuthorizationError(`Access denied to account ${accountId}`)
+                        }
+                    }
+
+                    // Keep 403 check as fallback for compatibility
                     if (axiosError.response?.status === 403) {
                         throw new AuthorizationError(`Access denied to account ${accountId}`)
                     }
