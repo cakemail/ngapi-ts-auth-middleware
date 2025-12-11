@@ -2,13 +2,15 @@ import { generateCacheKey, calculateTtlFromToken } from '../../../src/utils/cach
 import jwt from 'jsonwebtoken'
 
 describe('cache-key', () => {
+    const testSecret = 'test-hmac-secret'
+
     describe('generateCacheKey', () => {
         it('should generate consistent cache keys', () => {
             const token = 'my-test-token'
             const accountId = 123
 
-            const key1 = generateCacheKey(token, accountId, 'account')
-            const key2 = generateCacheKey(token, accountId, 'account')
+            const key1 = generateCacheKey(token, accountId, 'account', testSecret)
+            const key2 = generateCacheKey(token, accountId, 'account', testSecret)
 
             expect(key1).toBe(key2)
         })
@@ -18,8 +20,8 @@ describe('cache-key', () => {
             const token2 = 'token-2'
             const accountId = 123
 
-            const key1 = generateCacheKey(token1, accountId, 'account')
-            const key2 = generateCacheKey(token2, accountId, 'account')
+            const key1 = generateCacheKey(token1, accountId, 'account', testSecret)
+            const key2 = generateCacheKey(token2, accountId, 'account', testSecret)
 
             expect(key1).not.toBe(key2)
         })
@@ -27,8 +29,8 @@ describe('cache-key', () => {
         it('should generate different keys for different identifiers', () => {
             const token = 'my-token'
 
-            const key1 = generateCacheKey(token, 123, 'account')
-            const key2 = generateCacheKey(token, 456, 'account')
+            const key1 = generateCacheKey(token, 123, 'account', testSecret)
+            const key2 = generateCacheKey(token, 456, 'account', testSecret)
 
             expect(key1).not.toBe(key2)
         })
@@ -37,8 +39,8 @@ describe('cache-key', () => {
             const token = 'my-token'
             const id = 123
 
-            const key1 = generateCacheKey(token, id, 'account')
-            const key2 = generateCacheKey(token, id, 'user')
+            const key1 = generateCacheKey(token, id, 'account', testSecret)
+            const key2 = generateCacheKey(token, id, 'user', testSecret)
 
             expect(key1).not.toBe(key2)
         })
@@ -47,11 +49,23 @@ describe('cache-key', () => {
             const token = 'my-token'
             const id = 123
 
-            const accountKey = generateCacheKey(token, id, 'account')
-            const userKey = generateCacheKey(token, id, 'user')
+            const accountKey = generateCacheKey(token, id, 'account', testSecret)
+            const userKey = generateCacheKey(token, id, 'user', testSecret)
 
             expect(accountKey).toContain(':account')
             expect(userKey).toContain(':user')
+        })
+
+        it('should generate different keys for different secrets', () => {
+            const token = 'my-token'
+            const id = 123
+            const secret1 = 'secret-1'
+            const secret2 = 'secret-2'
+
+            const key1 = generateCacheKey(token, id, 'account', secret1)
+            const key2 = generateCacheKey(token, id, 'account', secret2)
+
+            expect(key1).not.toBe(key2)
         })
     })
 

@@ -1,11 +1,17 @@
 import Redis from 'ioredis'
 import { RedisConfig } from '../types'
+import { encrypt, decrypt } from '../utils/encryption'
 
 export class RedisService {
     private client: Redis
     private isConnected: boolean = false
+    private encryptionSecret: string
 
-    constructor(config?: RedisConfig) {
+    constructor(config?: RedisConfig, encryptionSecret?: string) {
+        if (!encryptionSecret) {
+            throw new Error('RedisService requires an encryption secret')
+        }
+        this.encryptionSecret = encryptionSecret
         this.client = new Redis({
             host: config?.host || process.env.REDIS_HOST || 'localhost',
             port: config?.port || parseInt(process.env.REDIS_PORT || '6379', 10),
@@ -69,7 +75,15 @@ export class RedisService {
 
         return ensureConnected
             .then(() => this.client.get(key))
-            .then((value) => (value ? (JSON.parse(value) as T) : null))
+            .then((value) => {
+                if (!value) return null
+                try {
+                    return decrypt<T>(value, this.encryptionSecret)
+                } catch (error) {
+                    console.warn('Redis decrypt error:', error instanceof Error ? error.message : error)
+                    return null
+                }
+            })
             .catch((error: unknown) => {
                 console.warn('Redis get error:', error instanceof Error ? error.message : error)
                 return null
@@ -80,7 +94,10 @@ export class RedisService {
         const ensureConnected = this.isConnected ? Promise.resolve() : this.connect()
 
         return ensureConnected
-            .then(() => this.client.setex(key, ttl, JSON.stringify(value)))
+            .then(() => {
+                const encrypted = encrypt(value, this.encryptionSecret)
+                return this.client.setex(key, ttl, encrypted)
+            })
             .then(() => undefined)
             .catch((error: unknown) => {
                 console.warn('Redis set error:', error instanceof Error ? error.message : error)

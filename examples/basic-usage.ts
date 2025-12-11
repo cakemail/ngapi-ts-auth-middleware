@@ -7,6 +7,7 @@ const app = express()
 // Public key will be automatically fetched from {API_BASE_URL}/token/pubkey
 const authMiddleware = createAuthMiddleware({
   apiBaseUrl: process.env.CAKEMAILAPI_BASE_URL,
+  cacheSecret: process.env.CACHE_SECRET || '', // Required: Secret for HMAC and encryption
   enableCaching: true,
   redis: {
     host: process.env.REDIS_HOST,

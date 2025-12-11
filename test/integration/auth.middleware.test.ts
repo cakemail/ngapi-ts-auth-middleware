@@ -31,6 +31,7 @@ describe('Auth Middleware Integration', () => {
         const authMiddleware = createAuthMiddleware({
             publicKey,
             enableCaching: false,
+            cacheSecret: 'test-secret-key',
         })
 
         app.use(authMiddleware)
@@ -48,6 +49,7 @@ describe('Auth Middleware Integration', () => {
         const authMiddleware = createAuthMiddleware({
             publicKey,
             enableCaching: false,
+            cacheSecret: 'test-secret-key',
         })
 
         app.use(authMiddleware)
@@ -65,6 +67,7 @@ describe('Auth Middleware Integration', () => {
         const authMiddleware = createAuthMiddleware({
             publicKey,
             enableCaching: false,
+            cacheSecret: 'test-secret-key',
         })
 
         app.use(authMiddleware)
@@ -86,6 +89,7 @@ describe('Auth Middleware Integration', () => {
         const authMiddleware = createAuthMiddleware({
             publicKey,
             enableCaching: false,
+            cacheSecret: 'test-secret-key',
             onError: onErrorMock,
         })
 
@@ -104,6 +108,7 @@ describe('Auth Middleware Integration', () => {
         const authMiddleware = createAuthMiddleware({
             apiBaseUrl: 'https://api.cakemail.dev',
             enableCaching: false,
+            cacheSecret: 'test-secret-key',
         })
 
         expect(authMiddleware).toBeInstanceOf(Function)
@@ -114,6 +119,7 @@ describe('Auth Middleware Integration', () => {
             publicKey,
             apiBaseUrl: 'https://custom-api.example.com',
             enableCaching: false,
+            cacheSecret: 'test-secret-key',
             accountIdParams: ['aid', 'account_id'],
             jwtOptions: {
                 algorithms: ['RS256'],
@@ -130,6 +136,7 @@ describe('Auth Middleware Integration', () => {
             publicKey,
             apiBaseUrl: 'https://api.cakemail.dev',
             enableCaching: false,
+            cacheSecret: 'test-secret-key',
         })
 
         app.use(authMiddleware)

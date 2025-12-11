@@ -26,7 +26,7 @@ export function extractAccountId(
         const value = req.query[param]
         if (value) {
             const parsed = parseInt(value as string, 10)
-            if (!isNaN(parsed)) {
+            if (!isNaN(parsed) && parsed > 0 && parsed <= Number.MAX_SAFE_INTEGER) {
                 return parsed
             }
         }

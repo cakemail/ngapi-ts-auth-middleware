@@ -19,6 +19,7 @@ export interface AuthMiddlewareConfig {
     publicKey?: string | Buffer
     redis?: RedisConfig
     enableCaching?: boolean
+    cacheSecret: string
     accountIdParams?: string[]
     onError?: (error: Error, req: Request) => void
     jwtOptions?: JwtOptions

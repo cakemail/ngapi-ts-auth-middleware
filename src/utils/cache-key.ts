@@ -1,14 +1,15 @@
-import { createHash } from 'crypto'
+import { createHmac } from 'crypto'
 import jwt from 'jsonwebtoken'
 import { JwtPayload } from '../types'
 
 export function generateCacheKey(
     token: string,
     identifier: string | number,
-    type: 'account' | 'user'
+    type: 'account' | 'user',
+    secret: string
 ): string {
-    const tokenHash = createHash('sha256').update(token).digest('hex').substring(0, 16)
-    return `${tokenHash}:${identifier}:${type}`
+    const tokenHmac = createHmac('sha256', secret).update(token).digest('hex').substring(0, 16)
+    return `${tokenHmac}:${identifier}:${type}`
 }
 
 export function calculateTtlFromToken(token: string): number {
