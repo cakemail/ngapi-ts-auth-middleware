@@ -143,7 +143,8 @@ The middleware auto-fetches the RSA public key from `{API_BASE_URL}/token/pubkey
 When `?accountId=X` is present:
 1. Decode JWT to get user's account ID
 2. If `X` != user's account ID, call `GET /accounts/X` with Bearer token
-3. API returns 200 (authorized) or 403 (denied)
+3. API returns 200 (authorized) or 400 with error code 8004 (denied)
+   - Response format for forbidden: `{"detail": [{"msg": "Forbidden", "type": "bad_request", "code": 8004}]}`
 4. Middleware stores account data in `res.locals.account`
 
 Without query param: `res.locals.account` = user's own account from JWT.
