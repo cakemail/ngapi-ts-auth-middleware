@@ -12,6 +12,9 @@ const authMiddleware = createAuthMiddleware({
   // API base URL (defaults to env var or https://api.cakemail.dev)
   apiBaseUrl: process.env.CAKEMAILAPI_BASE_URL || 'https://api.cakemail.dev',
 
+  // Required: Secret for HMAC cache keys and Redis data encryption
+  cacheSecret: process.env.CACHE_SECRET || '',
+
   // Enable Redis caching
   enableCaching: true,
 

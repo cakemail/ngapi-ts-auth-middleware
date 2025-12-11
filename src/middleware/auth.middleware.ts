@@ -12,8 +12,13 @@ import { authorizeAccount } from './authorize'
 import { loadUserData } from './user-loader'
 
 export function createAuthMiddleware(config: AuthMiddlewareConfig) {
+    // Validate required config
+    if (!config.cacheSecret) {
+        throw new ConfigurationError('cacheSecret is required in AuthMiddlewareConfig')
+    }
+
     // Initialize services
-    const redisService = config.enableCaching !== false ? new RedisService(config.redis) : null
+    const redisService = config.enableCaching !== false ? new RedisService(config.redis, config.cacheSecret) : null
     const apiService = new NgApiService(config.apiBaseUrl)
     const baseUrl =
         config.apiBaseUrl || process.env.CAKEMAILAPI_BASE_URL || 'https://api.cakemail.dev'
@@ -82,7 +87,8 @@ export function createAuthMiddleware(config: AuthMiddlewareConfig) {
                     targetAccountId,
                     token,
                     apiService,
-                    redisService
+                    redisService,
+                    config.cacheSecret
                 )
             } else {
                 // Self-access: create minimal account from JWT
@@ -90,7 +96,7 @@ export function createAuthMiddleware(config: AuthMiddlewareConfig) {
             }
 
             // 6. Load full user data from /users/self
-            const userData = await loadUserData(decoded.id, token, apiService, redisService)
+            const userData = await loadUserData(decoded.id, token, apiService, redisService, config.cacheSecret)
 
             // 7. Create user's own account representation from JWT
             const userOwnAccount = createAccountFromJwt(decoded)

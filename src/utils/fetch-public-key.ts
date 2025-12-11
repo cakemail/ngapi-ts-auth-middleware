@@ -38,7 +38,12 @@ export async function fetchPublicKey(baseUrl: string): Promise<string> {
             cachedPublicKey = publicKeyData
             return cachedPublicKey
         } catch (error) {
-            keyFetchPromise = null // Reset promise so we can retry
+            // Keep the failed promise to prevent concurrent retry attempts
+            // Only reset after the error propagates to all waiting callers
+            setTimeout(() => {
+                keyFetchPromise = null
+            }, 0)
+
             if (axios.isAxiosError(error)) {
                 throw new ConfigurationError(
                     `Failed to fetch public key from ${baseUrl}/token/pubkey: ${error.message}`

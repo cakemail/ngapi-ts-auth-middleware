@@ -1,6 +1,7 @@
 import axios, { AxiosInstance, AxiosError } from 'axios'
 import { Account, AccountResponse, User, UserResponse } from '../types'
-import { AuthenticationError, AuthorizationError } from '../errors'
+import { AuthenticationError, AuthorizationError, ConfigurationError } from '../errors'
+import { isValidAccount, isValidUser } from '../utils/validators'
 
 export class NgApiService {
     private client: AxiosInstance
@@ -24,7 +25,17 @@ export class NgApiService {
                     Authorization: `Bearer ${token}`,
                 },
             })
-            .then((response) => response.data as unknown as Account)
+            .then((response) => {
+                // Extract account data from response
+                const accountData = response.data?.data || response.data
+
+                // Validate the response structure
+                if (!isValidAccount(accountData)) {
+                    throw new ConfigurationError('Invalid account data received from API')
+                }
+
+                return accountData
+            })
             .catch((error: unknown) => {
                 if (axios.isAxiosError(error)) {
                     const axiosError = error as AxiosError
@@ -47,12 +58,22 @@ export class NgApiService {
                     Authorization: `Bearer ${token}`,
                 },
             })
-            .then((response) => response.data as unknown as User)
+            .then((response) => {
+                // Extract user data from response
+                const userData = response.data?.data || response.data
+
+                // Validate the response structure
+                if (!isValidUser(userData)) {
+                    throw new ConfigurationError('Invalid user data received from API')
+                }
+
+                return userData
+            })
             .catch((error: unknown) => {
                 if (axios.isAxiosError(error)) {
                     const axiosError = error as AxiosError
                     if (axiosError.response?.status === 401) {
-                        throw new AuthorizationError('Failed to retrieve user data')
+                        throw new AuthenticationError('Failed to retrieve user data')
                     }
                 }
                 throw error

@@ -6,6 +6,7 @@ const app = express()
 // Create auth middleware
 const authMiddleware = createAuthMiddleware({
     apiBaseUrl: process.env.CAKEMAILAPI_BASE_URL,
+    cacheSecret: process.env.CACHE_SECRET || '', // Required: Secret for HMAC and encryption
     enableCaching: true,
 })
 

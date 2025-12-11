@@ -7,11 +7,12 @@ export async function authorizeAccount(
     accountId: number,
     token: string,
     apiService: NgApiService,
-    redisService: RedisService | null
+    redisService: RedisService | null,
+    cacheSecret: string
 ): Promise<Account> {
     // Check cache first
     if (redisService) {
-        const cacheKey = generateCacheKey(token, accountId, 'account')
+        const cacheKey = generateCacheKey(token, accountId, 'account', cacheSecret)
         const cached = await redisService.get<Account>(cacheKey)
         if (cached) {
             return cached
@@ -23,7 +24,7 @@ export async function authorizeAccount(
 
     // Cache the result
     if (redisService && account) {
-        const cacheKey = generateCacheKey(token, accountId, 'account')
+        const cacheKey = generateCacheKey(token, accountId, 'account', cacheSecret)
         const ttl = calculateTtlFromToken(token)
         await redisService.set(cacheKey, account, ttl)
     }

@@ -29,6 +29,7 @@ const app = express();
 
 // Public key is automatically fetched from {API_BASE_URL}/token/pubkey
 const authMiddleware = createAuthMiddleware({
+  cacheSecret: process.env.CACHE_SECRET, // Required: Secret for HMAC and encryption
   enableCaching: true,
   redis: {
     host: process.env.REDIS_HOST,
@@ -59,6 +60,7 @@ app.listen(3000);
 
 | Option | Type | Required | Default | Description |
 |--------|------|----------|---------|-------------|
+| `cacheSecret` | `string` | **Yes** | - | **Required secret for HMAC cache keys and Redis data encryption. Must be a strong, random value. Keep this secret secure!** |
 | `publicKey` | `string | Buffer` | No | Auto-fetched from `{API_BASE_URL}/token/pubkey` | RSA public key for JWT verification (optional, fetched automatically if not provided) |
 | `apiBaseUrl` | `string` | No | `process.env.CAKEMAILAPI_BASE_URL` or `https://api.cakemail.dev` | API base URL |
 | `enableCaching` | `boolean` | No | `true` | Enable Redis caching |
@@ -89,6 +91,7 @@ app.listen(3000);
 
 The middleware respects the following environment variables:
 
+- `CACHE_SECRET`: **Required** - Secret for HMAC and Redis encryption (generate with `openssl rand -base64 32`)
 - `CAKEMAILAPI_BASE_URL`: API base URL (default: `https://api.cakemail.dev`)
 - `REDIS_HOST`: Redis host (default: `localhost`)
 - `REDIS_PORT`: Redis port (default: `6379`)

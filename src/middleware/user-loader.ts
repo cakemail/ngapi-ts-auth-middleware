@@ -7,11 +7,12 @@ export async function loadUserData(
     userId: number,
     token: string,
     apiService: NgApiService,
-    redisService: RedisService | null
+    redisService: RedisService | null,
+    cacheSecret: string
 ): Promise<User> {
     // Check cache first
     if (redisService) {
-        const cacheKey = generateCacheKey(token, userId, 'user')
+        const cacheKey = generateCacheKey(token, userId, 'user', cacheSecret)
         const cached = await redisService.get<User>(cacheKey)
         if (cached) {
             return cached
@@ -23,7 +24,7 @@ export async function loadUserData(
 
     // Cache the result
     if (redisService && user) {
-        const cacheKey = generateCacheKey(token, userId, 'user')
+        const cacheKey = generateCacheKey(token, userId, 'user', cacheSecret)
         const ttl = calculateTtlFromToken(token)
         await redisService.set(cacheKey, user, ttl)
     }
