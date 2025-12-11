@@ -34,11 +34,30 @@ jobs:
       - name: Extract version from tag
         id: get_version
         run: |
-          # Remove 'v' prefix if present (e.g., v1.2.3 -> 1.2.3)
-          VERSION=${GITHUB_REF#refs/tags/}
-          VERSION=${VERSION#v}
+          # Extract tag name
+          TAG=${GITHUB_REF#refs/tags/}
+
+          # Check if this is a beta release (beta- or staging- prefix)
+          if [[ $TAG == beta-* ]] || [[ $TAG == staging-* ]]; then
+            # Remove prefix and append beta identifier with timestamp
+            BASE_VERSION=${TAG#beta-}
+            BASE_VERSION=${BASE_VERSION#staging-}
+            BASE_VERSION=${BASE_VERSION#v}
+            TIMESTAMP=$(date +%s)
+            VERSION="${BASE_VERSION}-beta.${TIMESTAMP}"
+            NPM_TAG="beta"
+            echo "This is a beta release"
+          else
+            # Remove 'v' or 'release-' prefix for production releases
+            VERSION=${TAG#v}
+            VERSION=${VERSION#release-}
+            NPM_TAG="latest"
+            echo "This is a production release"
+          fi
+
           echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "Publishing version: $VERSION"
+          echo "npm_tag=$NPM_TAG" >> $GITHUB_OUTPUT
+          echo "Publishing version: $VERSION with tag: $NPM_TAG"
 
       - name: Update package.json version
         run: |
@@ -51,4 +70,4 @@ jobs:
         run: npm run build
 
       - name: Publish to npm
-        run: npm publish --access public
+        run: npm publish --access public --tag ${{ steps.get_version.outputs.npm_tag }}
