@@ -6,7 +6,10 @@
       "Bash(npm run build:*)",
       "Bash(ls:*)",
       "Bash(npm run lint:*)",
-      "Bash(npx depcheck:*)"
+      "Bash(npx depcheck:*)",
+      "Bash(npm run format:check:*)",
+      "Bash(npm install:*)",
+      "Bash(npx jest:*)"
     ]
   }
 }

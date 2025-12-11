@@ -34,9 +34,12 @@ describe('Auth Middleware - Happy Path Integration Tests', () => {
 
         // Mock JWT service to return sample payload
         const MockedJwtService = JwtService as jest.MockedClass<typeof JwtService>
-        MockedJwtService.mockImplementation(() => ({
-            verify: jest.fn().mockResolvedValue(sampleTokenPayload),
-        } as any))
+        MockedJwtService.mockImplementation(
+            () =>
+                ({
+                    verify: jest.fn().mockResolvedValue(sampleTokenPayload),
+                }) as any
+        )
     })
 
     afterEach(() => {
@@ -47,9 +50,7 @@ describe('Auth Middleware - Happy Path Integration Tests', () => {
     describe('Successful Authentication Flow', () => {
         it('should authenticate valid JWT and load user data without impersonation', async () => {
             // Mock the /users/self API call
-            nock(apiBaseUrl)
-                .get('/users/self')
-                .reply(200, userPayload)
+            nock(apiBaseUrl).get('/users/self').reply(200, userPayload)
 
             const authMiddleware = createAuthMiddleware({
                 publicKey,
@@ -59,7 +60,7 @@ describe('Auth Middleware - Happy Path Integration Tests', () => {
             })
 
             app.use(authMiddleware)
-            app.get('/test', (req: Request, res: Response) => {
+            app.get('/test', (_req: Request, res: Response) => {
                 res.json({
                     success: true,
                     user: res.locals.user,
@@ -100,9 +101,7 @@ describe('Auth Middleware - Happy Path Integration Tests', () => {
                 })
 
             // Mock the /users/self API call
-            nock(apiBaseUrl)
-                .get('/users/self')
-                .reply(200, userPayload)
+            nock(apiBaseUrl).get('/users/self').reply(200, userPayload)
 
             const authMiddleware = createAuthMiddleware({
                 publicKey,
@@ -112,7 +111,7 @@ describe('Auth Middleware - Happy Path Integration Tests', () => {
             })
 
             app.use(authMiddleware)
-            app.get('/test', (req: Request, res: Response) => {
+            app.get('/test', (_req: Request, res: Response) => {
                 res.json({
                     success: true,
                     targetAccount: res.locals.account,
@@ -149,7 +148,7 @@ describe('Auth Middleware - Happy Path Integration Tests', () => {
             })
 
             app.use(authMiddleware)
-            app.get('/test', (req: Request, res: Response) => {
+            app.get('/test', (_req: Request, res: Response) => {
                 res.json({ success: true })
             })
 
@@ -166,9 +165,7 @@ describe('Auth Middleware - Happy Path Integration Tests', () => {
     describe('Input Validation', () => {
         it('should reject negative account IDs', async () => {
             // Mock user API call
-            nock(apiBaseUrl)
-                .get('/users/self')
-                .reply(200, userPayload)
+            nock(apiBaseUrl).get('/users/self').reply(200, userPayload)
 
             const authMiddleware = createAuthMiddleware({
                 publicKey,
@@ -178,7 +175,7 @@ describe('Auth Middleware - Happy Path Integration Tests', () => {
             })
 
             app.use(authMiddleware)
-            app.get('/test', (req: Request, res: Response) => {
+            app.get('/test', (_req: Request, res: Response) => {
                 res.json({
                     accountId: res.locals.account.id,
                 })
@@ -196,9 +193,7 @@ describe('Auth Middleware - Happy Path Integration Tests', () => {
 
         it('should reject account IDs larger than MAX_SAFE_INTEGER', async () => {
             // Mock user API call
-            nock(apiBaseUrl)
-                .get('/users/self')
-                .reply(200, userPayload)
+            nock(apiBaseUrl).get('/users/self').reply(200, userPayload)
 
             const authMiddleware = createAuthMiddleware({
                 publicKey,
@@ -208,7 +203,7 @@ describe('Auth Middleware - Happy Path Integration Tests', () => {
             })
 
             app.use(authMiddleware)
-            app.get('/test', (req: Request, res: Response) => {
+            app.get('/test', (_req: Request, res: Response) => {
                 res.json({
                     accountId: res.locals.account.id,
                 })

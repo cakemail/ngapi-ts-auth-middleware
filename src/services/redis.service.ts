@@ -80,7 +80,10 @@ export class RedisService {
                 try {
                     return decrypt<T>(value, this.encryptionSecret)
                 } catch (error) {
-                    console.warn('Redis decrypt error:', error instanceof Error ? error.message : error)
+                    console.warn(
+                        'Redis decrypt error:',
+                        error instanceof Error ? error.message : error
+                    )
                     return null
                 }
             })
