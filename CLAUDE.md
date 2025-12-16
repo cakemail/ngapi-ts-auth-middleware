@@ -92,8 +92,10 @@ Helper functions in `src/utils/`:
 
 - **`token-extractor.ts`** - Extract Bearer token and account ID from request
 - **`fetch-public-key.ts`** - Fetch RSA public key from API
-- **`cache-key.ts`** - Generate cache keys with format `ngapi:{tokenHash}:{id}:{type}`
+- **`cache-key.ts`** - Generate HMAC-based cache keys and calculate TTL from token expiry
+- **`encryption.ts`** - AES-256-GCM encryption/decryption for Redis cached data
 - **`error-handler.ts`** - Centralized error handling with HTTP status codes
+- **`validators.ts`** - Runtime validation for Account and User response structures
 
 ### Error Types
 
@@ -111,17 +113,22 @@ TypeScript types in `src/types/`:
 - **`jwt.types.ts`** - JWT payload and decoded token types
 - **`user.types.ts`** - User and AuthenticatedUser types
 - **`account.types.ts`** - Account structure and usage limits
-- **`index.ts`** - Re-exports all types for convenience
+- **`express.ts`** - Express.Locals module augmentation (auto-types `res.locals` for consumers)
+- **`index.ts`** - Re-exports all types and imports express augmentation
 
 ## Redis Caching Strategy
 
-**Cache key format**: `ngapi:{tokenHash}:{accountId|userId}:{type}`
-- `tokenHash` = First 16 chars of SHA256(token)
+**Cache key format**: `{tokenHmac}:{accountId|userId}:{type}`
+- `tokenHmac` = First 16 chars of HMAC-SHA256(token, cacheSecret)
 - `type` = `account` or `user`
+
+**Data encryption**: Cached data is encrypted using AES-256-GCM with the `cacheSecret` (see `src/utils/encryption.ts`).
 
 **TTL calculation**: Cache expires when JWT token expires (min: 60s, max: 24h)
 
 **Fail-open behavior**: If Redis connection fails, middleware continues without caching (logs warning but doesn't block requests).
+
+**Required configuration**: `cacheSecret` is required and used for both HMAC key generation and data encryption.
 
 ## Testing Strategy
 
@@ -159,6 +166,7 @@ Following Express best practices, all data is stored in `res.locals` (not `req`)
 ## Environment Variables
 
 Default values (can be overridden in config):
+- `CACHE_SECRET` - **Required** for HMAC cache keys and AES-256-GCM encryption (generate with `openssl rand -base64 32`)
 - `CAKEMAILAPI_BASE_URL` - API base URL (default: `https://api.cakemail.dev`)
 - `REDIS_HOST` - Redis host (default: `localhost`)
 - `REDIS_PORT` - Redis port (default: `6379`)

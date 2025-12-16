@@ -115,7 +115,7 @@ describe('Auth Middleware - Happy Path Integration Tests', () => {
                 res.json({
                     success: true,
                     targetAccount: res.locals.account,
-                    userOwnAccount: res.locals.user.account,
+                    userOwnAccount: res.locals.user!.account,
                 })
             })
 
@@ -185,7 +185,7 @@ describe('Auth Middleware - Happy Path Integration Tests', () => {
             app.use(authMiddleware)
             app.get('/test', (_req: Request, res: Response) => {
                 res.json({
-                    accountId: res.locals.account.id,
+                    accountId: res.locals.account!.id,
                 })
             })
 
@@ -213,7 +213,7 @@ describe('Auth Middleware - Happy Path Integration Tests', () => {
             app.use(authMiddleware)
             app.get('/test', (_req: Request, res: Response) => {
                 res.json({
-                    accountId: res.locals.account.id,
+                    accountId: res.locals.account!.id,
                 })
             })
 
