@@ -16,14 +16,14 @@ Express TypeScript authentication/authorization middleware for Cakemail's API. T
 ## Installation
 
 ```bash
-npm install @cakemail/ngapi-ts-auth-middleware
+npm install @cakemail-org/ngapi-ts-auth-middleware
 ```
 
 ## Quick Start
 
 ```typescript
 import express from 'express';
-import { createAuthMiddleware } from '@cakemail/ngapi-ts-auth-middleware';
+import { createAuthMiddleware } from '@cakemail-org/ngapi-ts-auth-middleware';
 
 const app = express();
 
@@ -269,7 +269,7 @@ const authMiddleware = createAuthMiddleware({
 
 ```typescript
 import express from 'express';
-import { createAuthMiddleware } from '@cakemail/ngapi-ts-auth-middleware';
+import { createAuthMiddleware } from '@cakemail-org/ngapi-ts-auth-middleware';
 
 const app = express();
 
@@ -334,7 +334,7 @@ const authMiddleware = createAuthMiddleware({
 ### Route-Specific Middleware
 
 ```typescript
-import { createAuthMiddleware } from '@cakemail/ngapi-ts-auth-middleware';
+import { createAuthMiddleware } from '@cakemail-org/ngapi-ts-auth-middleware';
 
 const authMiddleware = createAuthMiddleware({});
 
@@ -398,7 +398,7 @@ import {
   JwtPayload,
   AuthenticationError,
   AuthorizationError,
-} from '@cakemail/ngapi-ts-auth-middleware';
+} from '@cakemail-org/ngapi-ts-auth-middleware';
 ```
 
 ## Testing

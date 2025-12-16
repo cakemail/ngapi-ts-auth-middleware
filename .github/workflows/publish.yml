@@ -1,0 +1,73 @@
+name: Publish to npm
+
+on:
+  release:
+    types: [created]
+
+permissions:
+  contents: read
+  id-token: write  # Required for npm provenance and trusted publishing
+
+jobs:
+  ci:
+    name: Run CI checks
+    uses: ./.github/workflows/ci.yml
+
+  publish:
+    name: Publish to npm
+    needs: ci
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Update npm
+        run: npm install -g npm@latest
+
+      - name: Extract version from tag
+        id: get_version
+        run: |
+          # Extract tag name
+          TAG=${GITHUB_REF#refs/tags/}
+
+          # Check if this is a beta release (beta- or staging- prefix)
+          if [[ $TAG == beta-* ]] || [[ $TAG == staging-* ]]; then
+            # Remove prefix and append beta identifier with timestamp
+            BASE_VERSION=${TAG#beta-}
+            BASE_VERSION=${BASE_VERSION#staging-}
+            BASE_VERSION=${BASE_VERSION#v}
+            TIMESTAMP=$(date +%s)
+            VERSION="${BASE_VERSION}-beta.${TIMESTAMP}"
+            NPM_TAG="beta"
+            echo "This is a beta release"
+          else
+            # Remove 'v' or 'release-' prefix for production releases
+            VERSION=${TAG#v}
+            VERSION=${VERSION#release-}
+            NPM_TAG="latest"
+            echo "This is a production release"
+          fi
+
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "npm_tag=$NPM_TAG" >> $GITHUB_OUTPUT
+          echo "Publishing version: $VERSION with tag: $NPM_TAG"
+
+      - name: Update package.json version
+        run: |
+          npm version ${{ steps.get_version.outputs.version }} --no-git-tag-version
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build project
+        run: npm run build
+
+      - name: Publish to npm
+        run: npm publish --access public --tag ${{ steps.get_version.outputs.npm_tag }}
