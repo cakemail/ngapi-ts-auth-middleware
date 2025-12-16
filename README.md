@@ -354,11 +354,40 @@ app.get('/api/campaigns', (req, res) => {
 
 ## TypeScript Support
 
-The middleware is written in TypeScript with full type definitions.
+The middleware is written in TypeScript with full type definitions. It automatically augments `Express.Locals` so TypeScript knows about `res.locals.user`, `res.locals.account`, and `res.locals.token` without any manual type declarations.
+
+### Automatic Type Augmentation
+
+When you import this package, `Express.Locals` is automatically augmented:
+
+```typescript
+import express from 'express';
+import { createAuthMiddleware } from '@cakemail/ngapi-ts-auth-middleware';
+
+const app = express();
+const authMiddleware = createAuthMiddleware({ cacheSecret: process.env.CACHE_SECRET });
+
+app.get('/api/resource', authMiddleware, (req, res) => {
+  // TypeScript automatically knows about these types:
+  // - res.locals.user is AuthenticatedUser | undefined
+  // - res.locals.account is Account | undefined
+  // - res.locals.token is string | undefined
+
+  if (res.locals.user && res.locals.account) {
+    res.json({
+      userId: res.locals.user.id,
+      userEmail: res.locals.user.email,
+      accountId: res.locals.account.id,
+    });
+  }
+});
+```
+
+No manual type casting or custom type declarations required.
 
 ### Importing Types
 
-Import types from the package:
+Types can be imported directly from the package for use in your application:
 
 ```typescript
 import {
@@ -370,50 +399,6 @@ import {
   AuthenticationError,
   AuthorizationError,
 } from '@cakemail/ngapi-ts-auth-middleware';
-```
-
-### Usage with Express
-
-The middleware stores data in `res.locals`, which TypeScript recognizes automatically:
-
-```typescript
-import { Request, Response } from 'express';
-import { AuthenticatedUser, Account } from '@cakemail/ngapi-ts-auth-middleware';
-
-app.get('/api/resource', authMiddleware, (req: Request, res: Response) => {
-  // Access authenticated data from res.locals
-  const user = res.locals.user as AuthenticatedUser;
-  const account = res.locals.account as Account;
-  const token = res.locals.token as string;
-
-  res.json({
-    userId: user.id,
-    accountId: account.id,
-  });
-});
-```
-
-### Type-Safe Helper
-
-For better type safety, you can create a helper type and guard:
-
-```typescript
-import { Request, Response } from 'express';
-import { AuthenticatedUser, Account } from '@cakemail/ngapi-ts-auth-middleware';
-
-interface AuthLocals {
-  user: AuthenticatedUser;
-  account: Account;
-  token: string;
-}
-
-type AuthResponse = Response<any, AuthLocals>;
-
-app.get('/api/resource', authMiddleware, (req: Request, res: AuthResponse) => {
-  // TypeScript knows res.locals has user, account, and token
-  const userId = res.locals.user.id;
-  const accountId = res.locals.account.id;
-});
 ```
 
 ## Testing
