@@ -373,13 +373,15 @@ app.get('/api/resource', authMiddleware, (req, res) => {
   // - res.locals.account is Account | undefined
   // - res.locals.token is string | undefined
 
-  if (res.locals.user && res.locals.account) {
-    res.json({
-      userId: res.locals.user.id,
-      userEmail: res.locals.user.email,
-      accountId: res.locals.account.id,
-    });
+  if (!res.locals.user || !res.locals.account) {
+    return res.status(500).json({ error: 'Authentication data missing' });
   }
+
+  res.json({
+    userId: res.locals.user.id,
+    userEmail: res.locals.user.email,
+    accountId: res.locals.account.id,
+  });
 });
 ```
 
